@@ -67,14 +67,8 @@
                     :alt="item.name"
                     class="w-full h-32 object-cover mb-3"
                   />
-                  <Link
-                    :href="`/products/${item.slug}`"
-                    class="block font-serif text-base md:text-lg tracking-wide hover:text-accent transition-colors mb-2"
-                  >
+                  <p class="block font-serif text-base md:text-lg tracking-wide mb-2">
                     {{ item.name }}
-                  </Link>
-                  <p class="text-xs font-sans text-muted-foreground">
-                    SKU: {{ item.sku }}
                   </p>
                 </div>
 
@@ -170,40 +164,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import MainLayout from '@/layouts/MainLayout.vue'
+import { useCart } from '@/stores/cartStore'
 
-interface CartItem {
-  id: number
-  name: string
-  slug: string
-  price_cents: number
-  quantity: number
-  sku: string
-  image: string
-}
+const { cartItems, initializeCart, updateQuantity, removeFromCart } = useCart()
 
-const cartItems = ref<CartItem[]>([
-  {
-    id: 1,
-    name: 'Ethereal Evening Gown',
-    slug: 'ethereal-evening-gown',
-    price_cents: 450000,
-    quantity: 1,
-    sku: 'MAE-ETH-001',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=500&fit=crop'
-  },
-  {
-    id: 5,
-    name: 'Nocturne Tailored Jacket',
-    slug: 'nocturne-tailored-jacket',
-    price_cents: 395000,
-    quantity: 1,
-    sku: 'MAE-NOC-005',
-    image: 'https://images.unsplash.com/photo-1434389896821-8148199shake1?w=400&h=500&fit=crop'
-  }
-])
+onMounted(() => {
+  initializeCart()
+})
 
 const subtotal = computed(() => {
   return cartItems.value.reduce((sum, item) => sum + (item.price_cents * item.quantity), 0) / 100
@@ -221,19 +191,8 @@ const total = computed(() => {
   return subtotal.value + shipping.value + tax.value
 })
 
-const updateQuantity = (id: number, newQuantity: number) => {
-  if (newQuantity <= 0) {
-    removeItem(id)
-    return
-  }
-  const item = cartItems.value.find(i => i.id === id)
-  if (item) {
-    item.quantity = newQuantity
-  }
-}
-
 const removeItem = (id: number) => {
-  cartItems.value = cartItems.value.filter(item => item.id !== id)
+  removeFromCart(id)
 }
 </script>
 

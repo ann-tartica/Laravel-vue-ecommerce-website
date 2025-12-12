@@ -61,7 +61,7 @@
               <p class="font-sans text-sm text-muted-foreground line-clamp-2 mb-4">
                 {{ product.description }}
               </p>
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between mb-4">
                 <span class="font-serif text-lg">
                   ₱{{ (product.price_cents / 100).toFixed(2) }}
                 </span>
@@ -69,6 +69,13 @@
                   Stock: {{ product.stock }}
                 </span>
               </div>
+              <button
+                @click="addProductToCart(product)"
+                :disabled="product.stock === 0"
+                class="w-full py-2 bg-foreground text-background font-sans text-xs tracking-[0.2em] uppercase hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {{ product.stock > 0 ? 'Add to Cart' : 'Out of Stock' }}
+              </button>
             </div>
           </div>
         </div>
@@ -82,8 +89,20 @@
 import { usePage } from '@inertiajs/vue3'
 import { Link } from '@inertiajs/vue3'
 import MainLayout from '@/layouts/MainLayout.vue'
+import { useCart } from '@/stores/cartStore'
 
 const page = usePage()
+const { addToCart } = useCart()
+
+const addProductToCart = (product: any) => {
+  addToCart({
+    id: product.id,
+    name: product.name,
+    price_cents: product.price_cents,
+    image: product.image
+  }, 1)
+  alert(`Added ${product.name} to cart!`)
+}
 
 const products = [
   {

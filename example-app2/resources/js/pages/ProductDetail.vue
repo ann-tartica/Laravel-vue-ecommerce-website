@@ -168,8 +168,10 @@
 import { ref } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import MainLayout from '@/layouts/MainLayout.vue'
+import { useCart } from '@/stores/cartStore'
 
 const quantity = ref(1)
+const { addToCart: addToCartStore } = useCart()
 
 const product = {
   id: 1,
@@ -208,8 +210,13 @@ const relatedProducts = [
 ]
 
 const addToCart = () => {
-  // This would be connected to your cart API
-  alert(`Added ${quantity.value} ${product.name} to cart`)
+  addToCartStore({
+    id: product.id,
+    name: product.name,
+    price_cents: product.price_cents,
+    image: product.image
+  }, quantity.value)
+  alert(`Added ${quantity.value} ${product.name} to cart!`)
   quantity.value = 1
 }
 </script>

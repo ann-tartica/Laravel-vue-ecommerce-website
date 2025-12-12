@@ -165,11 +165,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
+import { useCart } from '@/stores/cartStore'
 
 const mobileMenuOpen = ref(false)
-const cartCount = ref(2) // You can make this dynamic by receiving it as a prop
+const { cartCount, initializeCart } = useCart()
+
+onMounted(() => {
+  initializeCart()
+})
 </script>
 
 <style scoped>
